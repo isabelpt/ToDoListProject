@@ -9,23 +9,33 @@
 import UIKit
 
 class ToDoTableViewController: UITableViewController {
-    var listOfToDo : [ToDoClass] = []
+    var listOfToDo : [ToDoCD] = []
     
-    func createToDo() -> [ToDoClass] {
-        let swiftToDo = ToDoClass()
-        swiftToDo.description = "Learn Swift"
-        swiftToDo.information = true
-        
-        let dogToDo = ToDoClass()
-        dogToDo.description = "Walk the dog"
-        
-        return [swiftToDo, dogToDo]
+//    func createToDo() -> [ToDoClass] {
+//        let swiftToDo = ToDoClass()
+//        swiftToDo.description = "Learn Swift"
+//        swiftToDo.information = true
+//
+//        let dogToDo = ToDoClass()
+//        dogToDo.description = "Walk the dog"
+//
+//        return [swiftToDo, dogToDo]
+//    }
+    func getToDos() {
+         if let accessToCoreData = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext {
+
+         if let dataFromCoreData = try? accessToCoreData.fetch(ToDoCD.fetchRequest()) as? [ToDoCD] {
+              listOfToDo = dataFromCoreData
+              tableView.reloadData()
+              }
+         }
     }
-    
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        listOfToDo = createToDo()
+//        listOfToDo = createToDo()
     }
 
     // MARK: - Table view data source
@@ -40,10 +50,10 @@ class ToDoTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
         let eachToDo = listOfToDo[indexPath.row]
         
-        if eachToDo.information {
-          cell.textLabel?.text = "❗️" + eachToDo.description
+        if eachToDo.importantInCD {
+            cell.textLabel?.text = "❗️" + eachToDo.descriptionInCD!
         } else {
-          cell.textLabel?.text = eachToDo.description
+          cell.textLabel?.text = eachToDo.descriptionInCD
         }
 
         return cell
@@ -57,6 +67,9 @@ class ToDoTableViewController: UITableViewController {
          performSegue(withIdentifier: "moveToCompletedToDoVC", sender: eachToDo)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+         getToDos()
+    }
 
 
 
@@ -70,7 +83,7 @@ class ToDoTableViewController: UITableViewController {
          }
 
          if let nextCompletedToDoVC = segue.destination as? CompletedToDoViewController {
-              if let choosenToDo = sender as? ToDoClass {
+              if let choosenToDo = sender as? ToDoCD {
                    nextCompletedToDoVC.selectedToDo = choosenToDo
                    nextCompletedToDoVC.previousToDoTVC = self
               }
