@@ -86,7 +86,7 @@ class ToDoTableViewController: UITableViewController {
          }
 
          if let nextCompletedToDoVC = segue.destination as? CompletedToDoViewController {
-              if let choosenToDo = sender as? ToDoClass {
+              if let choosenToDo = sender as? ToDoCD {
                    nextCompletedToDoVC.selectedToDo = choosenToDo
                    nextCompletedToDoVC.previousToDoTVC = self
               }
